@@ -606,7 +606,7 @@ fu! s:Update(str)
 	let pat = s:matcher == {} ? s:SplitPattern(str) : str
 	let lines = s:nolim == 1 && empty(str) ? copy(g:ctrlp_lines)
 		\ : s:MatchedItems(g:ctrlp_lines, pat, s:mw_res)
-	if s:matcher != {} && s:matcher["color"]
+	if s:matcher != {} && s:matcher["highlight"]
 		let s:matcher_lines = copy(lines)
 		let lines = map(lines, 'substitute(v:val, "\\zs\|\\ze", "", "g")')
 	en
@@ -1676,16 +1676,15 @@ fu! ctrlp#syntax()
 endf
 
 fu! s:highlight(pat, grp)
-	if s:matcher != {}
-		if s:matcher["color"]
-			cal clearmatches()
-			for l in s:matcher_lines
-				cal matchadd(a:grp, l)
-			endfor
-			cal matchadd('CtrlPLinePre', '^>')
-		endif
+    let hlmode = s:matcher == {} ? 0 : s:matcher["highlight"]
+	if hlmode == 1
+		cal clearmatches()
+		for l in s:matcher_lines
+			cal matchadd(a:grp, l)
+		endfor
+		cal matchadd('CtrlPLinePre', '^>')
 		unlet s:matcher_lines
-	el
+	elsei hlmode == 0
 		cal clearmatches()
 		if !empty(a:pat) && s:ispath
 			if s:regexp
