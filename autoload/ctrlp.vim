@@ -1680,7 +1680,7 @@ fu! s:highlight(pat, grp)
 	if hlmode == 1
 		cal clearmatches()
 		for l in s:matcher_lines
-			cal matchadd(a:grp, l)
+			cal matchadd(a:grp, substitute(l, '[\\.]', '\\&', 'g')
 		endfor
 		cal matchadd('CtrlPLinePre', '^>')
 		unlet s:matcher_lines
