@@ -465,6 +465,15 @@ fu! s:UserCmd(lscmd)
 	el
 		let g:ctrlp_allfiles = split(system(printf(lscmd, path)), "\n")
 	en
+
+	" if use dir.exe command in windows, when noascii character in the
+	" filename, like chinese, it will return filenames with encoding according
+	" to the windows system encoding, then, it will break the ctrlp to search file.
+	if has('win32') || has('win64')
+		if lscmd =~ 'dir' && match(&shell, 'cmd.exe') && exists('g:ctrlp_system_filename_encoding')
+			cal map(g:ctrlp_allfiles, 'iconv(v:val, g:ctrlp_system_filename_encoding, &enc)')
+		endif
+	endif
 	if exists('+ssl') && exists('ssl')
 		let &ssl = ssl
 		cal map(g:ctrlp_allfiles, 'tr(v:val, "\\", "/")')
